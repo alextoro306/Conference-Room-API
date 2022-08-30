@@ -22,7 +22,7 @@ interface ICalReservation {
   end: string;
 }
 
- ical.async.fromURL('https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752870-fi', {}, (err, data) => { 
+ ical.async.fromURL('https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752881-fi', {}, (err, data) => { 
   const d = JSON.stringify(data)
   const dd = JSON.parse(d) as {};
   const myData: ICalReservation[] = [];
@@ -32,7 +32,7 @@ interface ICalReservation {
     myData.push(e);
   }
 
-  console.log(myData.length)
+  console.log(myData)
   myData.map(x => console.log(x.uid))
 });
 
