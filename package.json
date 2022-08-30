@@ -1,0 +1,53 @@
+{
+  "name": "ts-node-boilerplate",
+  "version": "1.0.0",
+  "author": "Joni Rinta-Kahila <joni.rinta-kahila@hotmail.com> (https://rints.in)",
+  "license": "MIT",
+  "homepage": "https://github.com/JoniRinta-Kahila/ts-node-boilerplate#readme",
+  "description": "nodejs boilerplate with ts, eslint with airbnb rules, chai & mocha for testing and express",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node-dev --poll src/index.ts",
+    "prod": "npm run build && node ./dist",
+    "test": "mocha -r ts-node/register test/*.ts"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "node-ical": "^0.15.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.3",
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^18.7.13",
+    "@typescript-eslint/eslint-plugin": "^5.35.1",
+    "@typescript-eslint/parser": "^5.35.1",
+    "chai": "^4.3.6",
+    "chai-http": "^4.3.0",
+    "eslint": "^8.23.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "mocha": "^10.0.0",
+    "prettier": "^2.7.1",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^4.8.2"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "boilerplate",
+    "node",
+    "typescript",
+    "mocha",
+    "chai",
+    "tests",
+    "airbnb-eslint",
+    "eslint"
+  ]
+}
