@@ -25,34 +25,23 @@ interface ICalReservation {
   end: string;
 }
 
-/*ON START*/
- ical.async.fromURL('https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752881-fi', {}, (err, data) => { 
-  const d = JSON.stringify(data)
-  const dd = JSON.parse(d) as {};
-  console.log(dd);
-  const myData: ICalReservation[] = [];
-
-  for (let [key, entry] of Object.entries(dd)) {
-    const e = entry as ICalReservation;
-    myData.push(e);
-  }
-});
 /*FUNCTIONS*/
-const getReservations = () : ICalReservation | null =>{
-  ical.async.fromURL('https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752881-fi', {}, (err, data) =>{
-    const stringData = JSON.stringify(data);
-    const jsonData = JSON.parse(stringData) as {};
-    const reservations : ICalReservation[] = [];
-
-    for (let [key, entry] of Object.entries(jsonData)){
-      const reservtion = entry as ICalReservation;
-      reservations.push(reservtion);
+const getReservationsAsync = async () =>{
+  let reservations: ICalReservation[] = [];
+  try {
+    const cal = await ical.async.fromURL('https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752881-fi');
+    const stringReservations = await JSON.stringify(cal); 
+    const jsonReservations = await JSON.parse(stringReservations);
+    for await (let [key, entry] of Object.entries(jsonReservations)) {
+      const e = entry as ICalReservation;
+      reservations.push(e);
     }
-    return reservations;
-  });
-  return null;
-}
-
+  }
+  catch (err){
+    console.log('Error: ' + err);
+  }
+  return await reservations;
+};
 
 
 /*CONFIGURATION*/
@@ -63,32 +52,28 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 /*GET*/
-app.get('/Reservations', (req, res) => {
+app.get('/reservations', async (req, res) => {
   const header = req.headers['password'];
-  console.log(header);
-  const  reservations = JSON.stringify(getReservations());
-  console.log(header);
-
-
+  const reservations = await getReservationsAsync();
   res.send(reservations);
 });
 app.get('/hello', (req, res) => {
   res.send('Hello World!');
 });
 
-app.get('/moi', (req, res ) => {
+app.get('/moi', (req, res) => {
   res.send('Hei Kaikki!');
 })
 /*POST*/
 app.post('/kakka', (req, res) => {
   const password = "kakka";
-  const data:string = req.body.password;
+  const data: string = req.body.password;
   if (!data) {
     res.status(400).send("Invalid data")
   }
   if (data === password) {
     res.status(200).send("tervetuloa")
-  }else{
+  } else {
     res.status(401).send("mee vessaan")
   }
 })
@@ -102,9 +87,14 @@ app.post('/room', (req, res) => {
 
 
 })
+/*ON START*/
+
+
 /*CONFIGURATION*/
+
 app.listen(5000, () => {
   console.log('Server running on port 5000');
 });
 
 export default app;
+
