@@ -30,17 +30,17 @@ interface Reservation {
   dtstamp: string;
   start: string;
   datetype: string;
-  duration: {hours: number, minutes: number};
+  duration: { hours: number, minutes: number };
   summary: string;
   uid: string;
   end: string;
 }
 /*FUNCTIONS*/
-const getReservationsAsync = async () =>{
+const getReservationsAsync = async () : Promise<ICalReservation[] | null> => {
   let reservations: ICalReservation[] = [];
   try {
     const cal = await ical.async.fromURL('https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752881-fi');
-    const stringReservations = await JSON.stringify(cal); 
+    const stringReservations = await JSON.stringify(cal);
     const jsonReservations = await JSON.parse(stringReservations);
     console.log(jsonReservations);
     /*convert object into ICalReservation and insert it into reservations array*/
@@ -49,7 +49,26 @@ const getReservationsAsync = async () =>{
       reservations.push(e);
     }
   }
-  catch (err){
+  catch (err) {
+    console.log('Error: ' + err);
+    return null;
+  }
+  return await reservations;
+};
+const getReservationsFromFileAsync = async () => {
+  let reservations: ICalReservation[] = [];
+  try {
+    const cal = await ical.async.fromURL('https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752881-fi');
+    const stringReservations = await JSON.stringify(cal);
+    const jsonReservations = await JSON.parse(stringReservations);
+    console.log(jsonReservations);
+    /*convert object into ICalReservation and insert it into reservations array*/
+    for await (let [key, entry] of Object.entries(jsonReservations)) {
+      const e = entry as ICalReservation;
+      reservations.push(e);
+    }
+  }
+  catch (err) {
     console.log('Error: ' + err);
     return null;
   }
@@ -66,18 +85,13 @@ app.use(express.json());
 
 /*GET*/
 app.get('/reservations', async (req, res) => {
-  const token = req.headers['varia_reservations_token'];
-  const localToken = 'ani9_5ce_8p5_yfe3_nas1_!#d';
+  const headerToken = req.headers['varia_reservations_token'];
+  const token = 'ani9_5ce_8p5_yfe3_nas1_!#d';
   const reservations = await getReservationsAsync();
-  
-  if (!token) {
-    res.status(400).send("Invalid data")
-  }
-  if (token === localToken) {
-    res.status(200).send(reservations)
-  } else {
-    res.status(401).send("Incorrect Token")
-  }
+
+  if (!headerToken) res.status(400).send("Invalid data")
+  else if (headerToken === token) res.status(200).send(reservations)
+  else res.status(401).send("Incorrect Token")
 });
 
 
