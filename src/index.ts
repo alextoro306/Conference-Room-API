@@ -1,9 +1,7 @@
 import express from 'express';
 import ical from 'node-ical';
 import cors from 'cors';
-import { type } from 'os';
-import { read } from 'fs';
-import { request } from 'http';
+import fs from 'fs';
 
 /***
  * example link https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752870-fi
@@ -30,17 +28,17 @@ interface Reservation {
   dtstamp: string;
   start: string;
   datetype: string;
-  duration: {hours: number, minutes: number};
+  duration: { hours: number, minutes: number };
   summary: string;
   uid: string;
   end: string;
 }
 /*FUNCTIONS*/
-const getReservationsAsync = async () =>{
+const getReservationsAsync = async () : Promise<ICalReservation[] | null> => {
   let reservations: ICalReservation[] = [];
   try {
     const cal = await ical.async.fromURL('https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752881-fi');
-    const stringReservations = await JSON.stringify(cal); 
+    const stringReservations = await JSON.stringify(cal);
     const jsonReservations = await JSON.parse(stringReservations);
     console.log(jsonReservations);
     /*convert object into ICalReservation and insert it into reservations array*/
@@ -49,11 +47,28 @@ const getReservationsAsync = async () =>{
       reservations.push(e);
     }
   }
-  catch (err){
+  catch (err) {
     console.log('Error: ' + err);
     return null;
   }
   return await reservations;
+};
+/*Alex fix this*/
+const getReservations = () => {
+  let reservations: ICalReservation[] = [];
+  try {
+    const stringReservations = fs.readFileSync('./reservations.json', 'utf-8');
+    // const stringReservations = await JSON.stringify(cal);
+    const jsonReservations = JSON.parse(stringReservations);
+    console.log(jsonReservations);
+    /*convert object into ICalReservation and insert it into reservations array*/
+    for (let [key, entry] of Object.entries(jsonReservations)) {
+      const e = entry as ICalReservation;
+      reservations.push(e);
+    }
+  } catch (error) {
+    console.log('Error: ' + error)
+  }
 };
 
 
@@ -64,24 +79,17 @@ app.use(cors({ origin: '*' }));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+
 /*GET*/
 app.get('/reservations', async (req, res) => {
-  const token = req.headers['varia_reservations_token'];
-  const localToken = 'ani9_5ce_8p5_yfe3_nas1_!#d';
+  const headerToken = req.headers['varia_reservations_token'];
+  const token = 'ani9_5ce_8p5_yfe3_nas1_!#d';
   const reservations = await getReservationsAsync();
-  
-  if (!token) {
-    res.status(400).send("Invalid data")
-  }
-  if (token === localToken) {
-    res.status(200).send(reservations)
-  } else {
-    res.status(401).send("Incorrect Token")
-  }
+
+  if (!headerToken) res.status(400).send("Invalid data")
+  else if (headerToken === token) res.status(200).send(reservations)
+  else res.status(401).send("Incorrect Token")
 });
-
-
-
 
 app.get('/hello', (req, res) => {
   res.send('Hello World!');
@@ -90,6 +98,8 @@ app.get('/hello', (req, res) => {
 app.get('/moi', (req, res) => {
   res.send('Hei Kaikki!');
 })
+
+
 /*POST*/
 app.post('/kakka', (req, res) => {
   const password = "kakka";
@@ -113,11 +123,13 @@ app.post('/room', (req, res) => {
 
 
 })
+
+
 /*ON START*/
+console.log(getReservations());
 
 
 /*CONFIGURATION*/
-
 app.listen(5000, () => {
   console.log('Server running on port 5000');
 });
