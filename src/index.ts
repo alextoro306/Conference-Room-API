@@ -1,9 +1,7 @@
 import express from 'express';
 import ical from 'node-ical';
 import cors from 'cors';
-import { type } from 'os';
-import { read } from 'fs';
-import { request } from 'http';
+import fs from 'fs';
 
 /***
  * example link https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752870-fi
@@ -55,24 +53,22 @@ const getReservationsAsync = async () : Promise<ICalReservation[] | null> => {
   }
   return await reservations;
 };
-const getReservationsFromFileAsync = async () => {
+/*Alex fix this*/
+const getReservations = () => {
   let reservations: ICalReservation[] = [];
   try {
-    const cal = await ical.async.fromURL('https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752881-fi');
-    const stringReservations = await JSON.stringify(cal);
-    const jsonReservations = await JSON.parse(stringReservations);
+    const stringReservations = fs.readFileSync('./reservations.json', 'utf-8');
+    // const stringReservations = await JSON.stringify(cal);
+    const jsonReservations = JSON.parse(stringReservations);
     console.log(jsonReservations);
     /*convert object into ICalReservation and insert it into reservations array*/
-    for await (let [key, entry] of Object.entries(jsonReservations)) {
+    for (let [key, entry] of Object.entries(jsonReservations)) {
       const e = entry as ICalReservation;
       reservations.push(e);
     }
+  } catch (error) {
+    console.log('Error: ' + error)
   }
-  catch (err) {
-    console.log('Error: ' + err);
-    return null;
-  }
-  return await reservations;
 };
 
 
@@ -82,6 +78,7 @@ app.use(cors({ origin: '*' }));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
 
 /*GET*/
 app.get('/reservations', async (req, res) => {
@@ -94,9 +91,6 @@ app.get('/reservations', async (req, res) => {
   else res.status(401).send("Incorrect Token")
 });
 
-
-
-
 app.get('/hello', (req, res) => {
   res.send('Hello World!');
 });
@@ -104,6 +98,8 @@ app.get('/hello', (req, res) => {
 app.get('/moi', (req, res) => {
   res.send('Hei Kaikki!');
 })
+
+
 /*POST*/
 app.post('/kakka', (req, res) => {
   const password = "kakka";
@@ -127,11 +123,13 @@ app.post('/room', (req, res) => {
 
 
 })
+
+
 /*ON START*/
+console.log(getReservations());
 
 
 /*CONFIGURATION*/
-
 app.listen(5000, () => {
   console.log('Server running on port 5000');
 });
