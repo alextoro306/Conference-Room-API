@@ -1,7 +1,7 @@
 import express from 'express';
 import ical from 'node-ical';
 import cors from 'cors';
-import fs from 'fs';
+import stringReservations from './Reservations.json'
 
 /***
  * example link https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752870-fi
@@ -34,10 +34,10 @@ interface Reservation {
   end: string;
 }
 /*FUNCTIONS*/
-const getReservationsAsync = async () : Promise<ICalReservation[] | null> => {
+const getReservationsAsync = async (room:string) : Promise<ICalReservation[] | null> => {
   let reservations: ICalReservation[] = [];
   try {
-    const cal = await ical.async.fromURL('https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752881-fi');
+    const cal = await ical.async.fromURL('https://varia-plus.solenovo.fi:443/integration/dav/' + room);
     const stringReservations = await JSON.stringify(cal);
     const jsonReservations = await JSON.parse(stringReservations);
     console.log(jsonReservations);
@@ -57,9 +57,9 @@ const getReservationsAsync = async () : Promise<ICalReservation[] | null> => {
 const getReservations = () => {
   let reservations: ICalReservation[] = [];
   try {
-    const stringReservations = fs.readFileSync('./reservations.json', 'utf-8');
+    // const stringReservations = fs.readFileSync('Reservations.json', 'utf-8');
     // const stringReservations = await JSON.stringify(cal);
-    const jsonReservations = JSON.parse(stringReservations);
+    const jsonReservations = JSON.parse(JSON.stringify(stringReservations));
     console.log(jsonReservations);
     /*convert object into ICalReservation and insert it into reservations array*/
     for (let [key, entry] of Object.entries(jsonReservations)) {
@@ -81,14 +81,15 @@ app.use(express.json());
 
 
 /*GET*/
-app.get('/reservations', async (req, res) => {
-  const headerToken = req.headers['varia_reservations_token'];
-  const token = 'ani9_5ce_8p5_yfe3_nas1_!#d';
-  const reservations = await getReservationsAsync();
+app.post('/reservations', async (req, res) => {
+  const room: string = req.body.room_id;
 
-  if (!headerToken) res.status(400).send("Invalid data")
-  else if (headerToken === token) res.status(200).send(reservations)
-  else res.status(401).send("Incorrect Token")
+  if (!room) {
+    res.status(400).json({error: 'Room info'})
+  }
+
+  const reservations = await getReservationsAsync(room);
+  res.status(200).send(reservations);
 });
 
 app.get('/hello', (req, res) => {
