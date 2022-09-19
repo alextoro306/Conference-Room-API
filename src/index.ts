@@ -1,7 +1,7 @@
 import express from 'express';
 import ical from 'node-ical';
 import cors from 'cors';
-import stringReservations from './Reservations.json'
+import reservationsFile from './Reservations.json'
 
 /***
  * example link https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752870-fi
@@ -59,7 +59,7 @@ const getReservations = () => {
   try {
     // const stringReservations = fs.readFileSync('Reservations.json', 'utf-8');
     // const stringReservations = await JSON.stringify(cal);
-    const jsonReservations = JSON.parse(JSON.stringify(stringReservations));
+    const jsonReservations = JSON.parse(JSON.stringify(reservationsFile));
     console.log(jsonReservations);
     /*convert object into ICalReservation and insert it into reservations array*/
     for (let [key, entry] of Object.entries(jsonReservations)) {
