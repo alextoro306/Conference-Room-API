@@ -92,37 +92,12 @@ app.post('/reservations', async (req, res) => {
   res.status(200).send(reservations);
 });
 
-app.get('/hello', (req, res) => {
-  res.send('Hello World!');
-});
-
-app.get('/moi', (req, res) => {
-  res.send('Hei Kaikki!');
-})
-
-
-/*POST*/
-app.post('/kakka', (req, res) => {
-  const password = "kakka";
-  const data: string = req.body.password;
-  if (!data) {
-    res.status(400).send("Invalid data")
-  }
-  if (data === password) {
-    res.status(200).send("tervetuloa")
-  } else {
-    res.status(401).send("mee vessaan")
-  }
-})
-
 app.post('/room', (req, res) => {
   const roomnumber = req.body.roomnumber
 
   if (!roomnumber) {
     res.status(400).send("Invalid data")
   }
-
-
 })
 
 
