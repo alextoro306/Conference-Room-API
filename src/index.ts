@@ -37,6 +37,13 @@ const getReservationsAsync = async (
   return reservations;
 };
 
+var dateAsString = "2022-10-07T09:30:00.000Z";  // Date as string
+var date = new Date(dateAsString);  // Convert string to type Date
+var dateToMs = date.getTime();  //  Convert variable of type Date to milliseconds
+
+console.log(date);
+console.log(dateToMs);
+
 /* Alex fix this */
 // const getReservations = () => {
 //   let reservations: ICalReservation[] = [];
