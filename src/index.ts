@@ -20,9 +20,7 @@ const getReservationsAsync = async (
     const cal = await ical.async.fromURL(
       `https://varia-plus.solenovo.fi:443/integration/dav/${room}`
     );
-    const stringReservations = JSON.stringify(cal);
-    const jsonReservations = JSON.parse(stringReservations);
-    console.log(jsonReservations);
+    const jsonReservations = JSON.parse(JSON.stringify(cal));
 
     /* convert object into ICalReservation and insert it into reservations array */
     // eslint-disable-next-line no-restricted-syntax, no-unused-vars
