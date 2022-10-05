@@ -20,9 +20,7 @@ const getReservationsAsync = async (
     const cal = await ical.async.fromURL(
       `https://varia-plus.solenovo.fi:443/integration/dav/${room}`
     );
-    const stringReservations = JSON.stringify(cal);
-    const jsonReservations = JSON.parse(stringReservations);
-    console.log(jsonReservations);
+    const jsonReservations = JSON.parse(JSON.stringify(cal));
 
     /* convert object into ICalReservation and insert it into reservations array */
     // eslint-disable-next-line no-restricted-syntax, no-unused-vars
@@ -37,12 +35,31 @@ const getReservationsAsync = async (
   return reservations;
 };
 
-var dateAsString = "2022-10-07T09:30:00.000Z";  // Date as string
-var date = new Date(dateAsString);  // Convert string to type Date
-var dateToMs = date.getTime();  //  Convert variable of type Date to milliseconds
+var dateAsString: string = "2022-10-07T09:30:00.000Z";  // Date as string
+var date: Date = new Date(dateAsString);  // Convert string to type Date
+var milliseconds: number = date.getTime();  //  Convert variable of type Date to milliseconds
 
-console.log(date);
-console.log(dateToMs);
+
+//   new Date("2022.10.11") gives a Date with the date writen in the text
+//  getTime() is a method that converts a variable of Date type to milliseconds which saved as number
+
+
+console.log("This is a string:", dateAsString);
+console.log("This is a date:",date);
+console.log("This is a number:",milliseconds);
+console.log()
+console.log("This is a number from function:" )
+
+let dateStringToMs = (date: string): number => {
+
+
+
+  return 1
+}
+
+
+
+
 
 /* Alex fix this */
 // const getReservations = () => {
