@@ -13,6 +13,6 @@ nodeJs boilerplate with TypeScript, airbnb-eslint, express, mocha and chai
 
 
  * example link https://varia-plus.solenovo.fi:443/integration/dav/ROOM-1597752870-fi
- * room info: ROOM-1597752870-fi
+ * room info: ROOM-1597752870-fi, ROOM-1597752881-fi
  * link base: https://varia-plus.solenovo.fi:443/integration/dav/
  
