@@ -50,16 +50,9 @@ console.log("This is a number:",milliseconds);
 console.log()
 console.log("This is a number from function:" )
 
-let dateStringToMs = (date: string): number => {
+const dateStringToMs = (date: string): number => new Date(date).getTime()
 
-
-
-  return 1
-}
-
-
-
-
+console.log(dateStringToMs)
 
 /* Alex fix this */
 // const getReservations = () => {
