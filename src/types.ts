@@ -11,7 +11,7 @@ export interface ICalReservation {
   end: string;
 }
 
-interface IRoomReservation {
+export interface IRoomReservation {
   reservationStart: number; // js time in ms
   reservationEnd: number; // js time in ms
   // sisältää mahdollisesti tiedon opettajan nimestä ja ryhmän tunnuksesta, ehkä myös opetettavan aiheen
